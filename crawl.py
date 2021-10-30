@@ -22,7 +22,7 @@ def send_mail(value):
         msg['From'] = sender_email
         msg['To'] = rec_email
         msg['Subject'] = "No reply"
-        body = "Mã chứng khoán của bạn đã yêu cầu. Thông tin là thời gian: " + value["time"] + " giá: " + value["price"]
+        body = "Mã chứng khoán của bạn đã yêu cầu. Thông tin là thời gian: " + value["time"] + " giá: " + value["price"]+ " khối lượng: " + value["totalVol"]
         msg.attach(MIMEText(body, 'plain'))
         server = smtplib.SMTP('smtp.gmail.com', 587)
         server.starttls()
@@ -103,7 +103,7 @@ def get_data():
     price_check = int(list[0][2].replace(",", ""))
     vol_check = int(list[0][3].replace(",", ""))
     driver = webdriver.Chrome(ChromeDriverManager().install())
-    # driver.minimize_window()
+    driver.minimize_window()
     user = "supergalaxy205@gmail.com"
     _pass = "123456"
     url = "https://finance.vietstock.vn/CTI/thong-ke-giao-dich.htm"
@@ -128,7 +128,7 @@ def get_data():
 
         check = 0
         while 1 == 1:
-
+            page = 0
             for i in range(15):
                 try:
                     id = i + j * 15
@@ -169,14 +169,16 @@ def get_data():
                     print(datetime.strptime(today + time.text, '%d/%m/%Y %H:%M:%S'))
                     list_last = find_list_last_time()
                     if datetime.strptime(today + time.text, '%d/%m/%Y %H:%M:%S') == last:
-                        check = 0
+                        _check = 0
                         for i in list_last:
                             if i[1] == price.text and i[2] == totalVol.text:
-                                check = 1
+                                _check = 1
+                                print("check same")
                                 break
-                        if check == 1:
+                        if _check == 1:
                             continue
                     if datetime.strptime(today + time.text, '%d/%m/%Y %H:%M:%S') < last:
+                        print("time nho hon")
                         check = 1
                         break
                     if int(price.text.replace(",", "")) >= price_check and int(
@@ -202,7 +204,17 @@ def get_data():
             if check == 1:
                 break
             j = j + 1
-            button = driver.find_element(By.XPATH, "//*[@id=\"btn-page-next\"]")
-            driver.execute_script("arguments[0].click();", button)
+            try:
+                button = driver.find_element(By.XPATH, "//*[@id=\"btn-page-next\"]")
+                driver.execute_script("arguments[0].click();", button)
+                # page_ = driver.find_element(By.XPATH,
+                #                            "/html/body/div[1]/div[12]/div/div[4]/div[2]/div[3]/div/div/div["
+                #                            "2]/div/div/div/span[1]/text()[1]").text
+                # if page_ == page:
+                #     print("no next page")
+                #     break
+            except:
+
+                break
 
     return data

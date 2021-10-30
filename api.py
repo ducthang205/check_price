@@ -29,8 +29,8 @@ app.add_middleware(
 async def get_record(page: int, limit: int):
     with engine.connect() as con:
         print(con)
-        rs = con.execute('SELECT * FROM records')
-        rowcount = con.execute("select count(*) from records")
+        rs = con.execute('SELECT * FROM records desc ')
+        rowcount = con.execute("select count(*) from records desc ")
         total = rowcount.fetchone()[0]
         print(page)
         print(limit)
